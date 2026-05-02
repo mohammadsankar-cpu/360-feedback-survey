@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>360° Feedback — Internal Customer / Project Partner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: hsl(160, 78%, 42%);
+    --accent-light: hsl(160, 78%, 95%);
+    --accent-mid: hsl(160, 78%, 85%);
+    --accent-glow: hsl(160, 90%, 60%);
+    --bg: #fafaf8;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --border: #e8e6e1;
+    --shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.03);
+    --shadow-hover: 0 2px 8px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+    --radius: 12px;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === DECORATIVE BACKGROUND ART === */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -30%;
+    right: -20%;
+    width: 70vw;
+    height: 70vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-light) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .6;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -40%;
+    left: -15%;
+    width: 60vw;
+    height: 60vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(160, 60%, 93%) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .5;
+  }
+
+  /* === GEOMETRIC LINE ART === */
+  .geo-lines {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .geo-lines .line {
+    position: absolute;
+    background: var(--accent);
+    opacity: .04;
+  }
+
+  .geo-lines .line:nth-child(1) {
+    width: 1px; height: 100%;
+    left: 12%;
+    animation: fadeSlide 8s ease-in-out infinite;
+  }
+  .geo-lines .line:nth-child(2) {
+    width: 1px; height: 100%;
+    right: 15%;
+    animation: fadeSlide 10s ease-in-out infinite 2s;
+  }
+  .geo-lines .line:nth-child(3) {
+    width: 100%; height: 1px;
+    top: 25%;
+    animation: fadeSlide 12s ease-in-out infinite 4s;
+  }
+  .geo-lines .line:nth-child(4) {
+    width: 200px; height: 200px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    top: 10%;
+    right: 8%;
+    background: transparent;
+    animation: spinSlow 30s linear infinite;
+  }
+  .geo-lines .line:nth-child(5) {
+    width: 120px; height: 120px;
+    border: 1px solid var(--accent);
+    top: 60%;
+    left: 5%;
+    background: transparent;
+    transform: rotate(45deg);
+    animation: spinSlow 25s linear infinite reverse;
+  }
+
+  @keyframes fadeSlide {
+    0%, 100% { opacity: .03; }
+    50% { opacity: .07; }
+  }
+
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* === LAYOUT === */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  /* === HEADER === */
+  .header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    animation: riseIn .8s ease-out;
+  }
+
+  .logo {
+    width: 200px;
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,.06));
+  }
+
+  .header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 600;
+    letter-spacing: -.02em;
+    color: var(--text);
+    margin-bottom: .25rem;
+  }
+
+  .header .version-badge {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: .35rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+
+  .header .subtitle {
+    font-size: .9rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    letter-spacing: .02em;
+  }
+
+  .divider {
+    width: 50px;
+    height: 2px;
+    background: var(--accent);
+    margin: 1.5rem auto;
+    border-radius: 2px;
+  }
+
+  /* === INTRO CARD === */
+  .intro-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 2.2rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow);
+    animation: riseIn .8s ease-out .1s both;
+  }
+
+  .intro-card h2 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: .8rem;
+    color: var(--text);
+  }
+
+  .intro-card p {
+    font-size: .88rem;
+    color: var(--text-muted);
+    margin-bottom: .6rem;
+  }
+
+  .intro-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+  }
+
+  .intro-card ul li {
+    font-size: .88rem;
+    color: var(--text-muted);
+    padding: .35rem 0 .35rem 1.5rem;
+    position: relative;
+  }
+
+  .intro-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: .75rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: .5;
+  }
+
+  .intro-card ul li strong {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .note {
+    font-size: .82rem;
+    color: var(--text-muted);
+    font-style: italic;
+    border-left: 2px solid var(--accent-mid);
+    padding-left: 1rem;
+    margin-top: 1rem;
+  }
+
+  /* === SECTION === */
+  .section {
+    margin-bottom: 2.5rem;
+    animation: riseIn .8s ease-out both;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-header .section-tag {
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: .7;
+    margin-left: auto;
+  }
+
+  /* === QUESTION CARDS === */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: box-shadow .3s ease, border-color .3s ease, transform .15s ease;
+    animation: riseIn .6s ease-out both;
+  }
+
+  .question-card:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--accent-mid);
+  }
+
+  .question-card:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light), var(--shadow-hover);
+  }
+
+  .question-card label {
+    display: block;
+    font-size: .9rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: .75rem;
+    line-height: 1.6;
+  }
+
+  textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-family: var(--font-body);
+    font-size: .85rem;
+    font-weight: 300;
+    color: var(--text);
+    background: var(--bg);
+    resize: vertical;
+    transition: border-color .2s ease, box-shadow .2s ease;
+    line-height: 1.6;
+  }
+
+  textarea::placeholder {
+    color: #b5b3ae;
+    font-style: italic;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+    background: #fff;
+  }
+
+  /* === RATING SECTION === */
+  .rating-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+  }
+
+  .rating-section h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: .3rem;
+  }
+
+  .rating-section .rating-desc {
+    font-size: .78rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .rating-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .8rem 0;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .rating-group:last-child { border-bottom: none; }
+
+  .rating-label {
+    font-size: .88rem;
+    font-weight: 400;
+    color: var(--text);
+    min-width: 160px;
+  }
+
+  .rating-stars {
+    display: flex;
+    gap: 0;
+  }
+
+  .rating-stars input[type="radio"] {
+    display: none;
+  }
+
+  .rating-stars label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .2s ease;
+    margin: 0;
+  }
+
+  .rating-stars label:first-of-type {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .rating-stars label:last-of-type {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .rating-stars label:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-color: var(--accent-mid);
+  }
+
+  .rating-stars input[type="radio"]:checked + label {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* === SUBMIT === */
+  .submit-area {
+    text-align: center;
+    margin-top: 2.5rem;
+    animation: riseIn .8s ease-out .3s both;
+  }
+
+  .submit-btn {
+    font-family: var(--font-body);
+    font-size: .95rem;
+    font-weight: 500;
+    letter-spacing: .03em;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 100px;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    transition: all .3s ease;
+    box-shadow: 0 2px 12px hsla(160, 78%, 42%, .25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    transform: translate(-50%,-50%);
+    transition: width .4s ease, height .4s ease;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px hsla(160, 78%, 42%, .35);
+  }
+
+  .submit-btn:hover::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .submit-note {
+    font-size: .78rem;
+    color: var(--text-muted);
+    margin-top: .75rem;
+  }
+
+  /* === FOOTER === */
+  .footer {
+    text-align: center;
+    padding: 2.5rem 0 1.5rem;
+    font-size: .75rem;
+    color: var(--text-muted);
+    opacity: .6;
+    letter-spacing: .02em;
+  }
+
+  /* === PROGRESS BAR === */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+    z-index: 1000;
+    transition: width .15s ease-out;
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  /* === ANIMATIONS === */
+  @keyframes riseIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 600px) {
+    .container { padding: 2rem 1rem 3rem; }
+    .logo { width: 150px; }
+    .intro-card { padding: 1.5rem; }
+    .question-card { padding: 1.2rem; }
+    .rating-group { flex-direction: column; align-items: flex-start; }
+    .rating-stars { margin-top: .4rem; }
+  }
+
+  /* === TOAST === */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--text);
+    color: #fff;
+    padding: .8rem 1.5rem;
+    border-radius: 100px;
+    font-size: .85rem;
+    font-weight: 400;
+    z-index: 2000;
+    opacity: 0;
+    transition: all .4s ease;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="geo-lines">
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+</div>
+
+<div class="container">
+
+  <header class="header">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAElAZADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD6pooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoorB8fSPF4J12SJ2jkWzlKspIIO08gik3ZXLpw9pNQ7uxvZor4s/tzVv+grqH/gS/8AjX0t8ELia6+HdjLczSzSmWbLyOWY/vD3Nc9HEqrLlsezmWSSwFJVXO+ttjvaKKK6TwwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKiubiG1gee5ljhhQZd5GCqo9STQCV9ES0V5rrvxk8M6c7R2bXGpSLxm3TCf99NjP4Zrm3+PUW/5PD0pX1a7AP/AKDWLxFNbs9Onk2NqLmjTfzsvzPbqK8m0n446FcyBNRsb2xz/GAJVH1xz+lek6JrWm65aC50m9hu4e7RtnHsR1B9jVwqwn8LOfEYHEYbWtBpfh9+xoVz3xD/AORF1/8A68pf/QTXQ1z3xD/5EXX/APryl/8AQTTn8LM8N/Gh6r8z48r6j+A//JNrD/rrN/6MNfLgr6U+FGtaZoHwq0661e8htIS82DIeWPmNwB1J+lebhHabb7H2/EkZTwsYxV25L8meoUV5RqHxx8PwSFbOz1C7A/jCLGD9MnP6Vf0H4xeGNTmSG5e406RjgG5QbM/7ykgfjiu9V6bdrnyMspxkY87pu39dNz0iimxSJLGskTq8bDKspyCPUGnVqeeFFeceLfizpnhrX7rSbrT72aaDbueMptOV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8qOv+0MV/wA/Zfe/8zj9P+GvhPT763vLPShHc27iSN/OkO1gcg4LYrsKKKqMVHZGNWvUrO9WTl6u5Rv9Js7+7sbq7h8yexkMtu24jYxUqTx14J60zWtE0/WooI9TtlnWCZZ4skgo6nIIIrRop2TJVSaaab028jD1vwrpOtXkd3ewSC6RfLE0MzwuU67SUIJHsaQeEtEGkz6atiq2M04uXiV2AMgIIPXjlRxW7RS5I72LWIqpKKk7LbUo6vpNnrFvHBqEPnRRypOq7iMOhyp49DS3Ol2lzqVnfzRbru0DiF9xGwOAG46HIHertFOyIVSSVk+/47/ecrL4A8OSRrEbF1hH34luJFSXkn51DYbk9/pWprPh3TNYgt4r22H+jnMDxMYnh4x8jKQRxxgVrUUuSPY0eJrNpubuvNmLa+F9ItdHu9MhtALS8DC4DOzPNuGCWcncTjvmqXi/w7PqWg2dhpbwpFayxsbW4z5VxGn/ACycjJx09enOa6eihwTVgjiKkZqd7u99e559aeEZ59f0vUP7G0fQ/sMxleSwfdJP8pHlnCKApzk5z0r0GiiiMFHYK+InWa5un9dbsKKKKowCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/9k=" alt="TH Nürnberg" class="logo">
+    <div class="version-badge">Internal Customer / Project Partner</div>
+    <h1>360° Feedback</h1>
+    <div class="divider"></div>
+    <p class="subtitle">Reliability · Service Orientation · Communication · Problem-Solving · Understanding Needs</p>
+  </header>
+
+  <div class="intro-card">
+    <h2>Dear Participant,</h2>
+    <p>As part of my MBA module <strong>Future Skills and the Development of Managerial Competencies</strong>, I am conducting a 360-degree feedback survey to support my personal and professional development.</p>
+    <p>The purpose of this survey is to better understand how others perceive my behavior in relation to three important future skills:</p>
+    <ul>
+      <li><strong>Self-determination</strong> — how proactively, independently, and responsibly I act.</li>
+      <li><strong>Self-competence</strong> — how well I understand myself, handle pressure, reflect on feedback, and continue developing.</li>
+      <li><strong>Systems competence</strong> — how well I understand connections, consequences, and the bigger picture.</li>
+    </ul>
+    <p class="note">Your answers will be treated anonymously. Names will not be included in the analysis. Please answer honestly and, where possible, provide concrete examples. Short but specific answers are completely sufficient.</p>
+  </div>
+
+  <form action="https://formsubmit.co/mohammadsankar@gmail.com" method="POST">
+    <!-- FormSubmit configuration -->
+    <input type="hidden" name="_subject" value="360° Feedback — Internal Customer / Project Partner">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="true">
+    
+    <input type="text" name="_honey" style="display:none">
+    <input type="hidden" name="Survey Version" value="Internal Customer / Project Partner">
+
+    <!-- Section A -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">◎</div>
+        <h2>Self-Determination</h2>
+        <span class="section-tag">Section A</span>
+      </div>
+      
+            <div class="question-card" style="animation-delay: 0.0s">
+              <label for="customer_a_1">In which situations have you experienced me as proactive, independent, or solution-oriented in our cooperation?</label>
+              <textarea id="customer_a_1" name="customer_a_1" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.1s">
+              <label for="customer_a_2">Where do you think I could take more ownership or initiative when supporting your needs, solving problems, or following up on topics?</label>
+              <textarea id="customer_a_2" name="customer_a_2" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.2s">
+              <label for="customer_a_3">How clearly do I communicate my priorities, intentions, next steps, or possible solutions when working with you?</label>
+              <textarea id="customer_a_3" name="customer_a_3" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.30000000000000004s">
+              <label for="customer_a_4">Can you describe a situation where I showed responsibility for a task, request, decision, or result?</label>
+              <textarea id="customer_a_4" name="customer_a_4" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+    </div>
+
+    <!-- Section B -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">◈</div>
+        <h2>Self-Competence</h2>
+        <span class="section-tag">Section B</span>
+      </div>
+      
+            <div class="question-card" style="animation-delay: 0.0s">
+              <label for="customer_b_1">What personal strengths do you observe in me during our cooperation?</label>
+              <textarea id="customer_b_1" name="customer_b_1" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.1s">
+              <label for="customer_b_2">In which situations do I handle pressure, urgent requests, criticism, or difficult communication well?</label>
+              <textarea id="customer_b_2" name="customer_b_2" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.2s">
+              <label for="customer_b_3">Where do you see personal development potential in my behavior, communication, reliability, or solution orientation?</label>
+              <textarea id="customer_b_3" name="customer_b_3" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.30000000000000004s">
+              <label for="customer_b_4">How well do I reflect on feedback and learn from experience? Please give an example if possible.</label>
+              <textarea id="customer_b_4" name="customer_b_4" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+    </div>
+
+    <!-- Section C -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">◇</div>
+        <h2>Systems Competence</h2>
+        <span class="section-tag">Section C</span>
+      </div>
+      
+            <div class="question-card" style="animation-delay: 0.0s">
+              <label for="customer_c_1">How well do I understand how my work affects your tasks, your expectations, other teams, or the overall project result?</label>
+              <textarea id="customer_c_1" name="customer_c_1" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.1s">
+              <label for="customer_c_2">Do I usually think about possible consequences before making decisions, proposing solutions, or taking action? Please give an example if possible.</label>
+              <textarea id="customer_c_2" name="customer_c_2" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.2s">
+              <label for="customer_c_3">Where could I improve in understanding the bigger picture of your needs, the project situation, or the overall process?</label>
+              <textarea id="customer_c_3" name="customer_c_3" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.30000000000000004s">
+              <label for="customer_c_4">What is one example where I connected details with the overall goal well — or where I could have done it better?</label>
+              <textarea id="customer_c_4" name="customer_c_4" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+    </div>
+
+    <!-- Final Questions -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">✦</div>
+        <h2>Overall Reflection</h2>
+        <span class="section-tag">Final</span>
+      </div>
+      
+            <div class="question-card" style="animation-delay: 0.0s">
+              <label for="customer_final_1">What is one behavior I should definitely continue in cooperation with internal customers or project partners?</label>
+              <textarea id="customer_final_1" name="customer_final_1" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.1s">
+              <label for="customer_final_2">What is one behavior I should reduce, change, or improve?</label>
+              <textarea id="customer_final_2" name="customer_final_2" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+            <div class="question-card" style="animation-delay: 0.2s">
+              <label for="customer_final_3">What is one concrete recommendation you would give me for my future development?</label>
+              <textarea id="customer_final_3" name="customer_final_3" rows="3" placeholder="Your honest observation…" required></textarea>
+            </div>
+    </div>
+
+    <!-- Rating Section -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">★</div>
+        <h2>Optional Ratings</h2>
+        <span class="section-tag">1–5 Scale</span>
+      </div>
+      <div class="rating-section">
+        <h3>Rate the following areas</h3>
+        <p class="rating-desc">1 = strong development need · 2 = some development need · 3 = solid level · 4 = strong level · 5 = very strong level</p>
+        
+            <div class="rating-group">
+              <span class="rating-label">Self-Determination</span>
+              <div class="rating-stars">
+                <input type="radio" id="customer_rating_1_1" name="customer_rating_1" value="1"><label for="customer_rating_1_1" title="1">1</label><input type="radio" id="customer_rating_1_2" name="customer_rating_1" value="2"><label for="customer_rating_1_2" title="2">2</label><input type="radio" id="customer_rating_1_3" name="customer_rating_1" value="3"><label for="customer_rating_1_3" title="3">3</label><input type="radio" id="customer_rating_1_4" name="customer_rating_1" value="4"><label for="customer_rating_1_4" title="4">4</label><input type="radio" id="customer_rating_1_5" name="customer_rating_1" value="5"><label for="customer_rating_1_5" title="5">5</label>
+              </div>
+            </div>
+            <div class="rating-group">
+              <span class="rating-label">Self-Competence</span>
+              <div class="rating-stars">
+                <input type="radio" id="customer_rating_2_1" name="customer_rating_2" value="1"><label for="customer_rating_2_1" title="1">1</label><input type="radio" id="customer_rating_2_2" name="customer_rating_2" value="2"><label for="customer_rating_2_2" title="2">2</label><input type="radio" id="customer_rating_2_3" name="customer_rating_2" value="3"><label for="customer_rating_2_3" title="3">3</label><input type="radio" id="customer_rating_2_4" name="customer_rating_2" value="4"><label for="customer_rating_2_4" title="4">4</label><input type="radio" id="customer_rating_2_5" name="customer_rating_2" value="5"><label for="customer_rating_2_5" title="5">5</label>
+              </div>
+            </div>
+            <div class="rating-group">
+              <span class="rating-label">Systems Competence</span>
+              <div class="rating-stars">
+                <input type="radio" id="customer_rating_3_1" name="customer_rating_3" value="1"><label for="customer_rating_3_1" title="1">1</label><input type="radio" id="customer_rating_3_2" name="customer_rating_3" value="2"><label for="customer_rating_3_2" title="2">2</label><input type="radio" id="customer_rating_3_3" name="customer_rating_3" value="3"><label for="customer_rating_3_3" title="3">3</label><input type="radio" id="customer_rating_3_4" name="customer_rating_3" value="4"><label for="customer_rating_3_4" title="4">4</label><input type="radio" id="customer_rating_3_5" name="customer_rating_3" value="5"><label for="customer_rating_3_5" title="5">5</label>
+              </div>
+            </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-area">
+      <button type="submit" class="submit-btn">Submit Feedback</button>
+      <p class="submit-note">Your response will be sent securely and anonymously.</p>
+    </div>
+
+  </form>
+
+  <div class="footer">
+    360° Feedback Survey · MBA Future Skills · Technische Hochschule Nürnberg Georg Simon Ohm
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Thank you for your feedback!</div>
+
+<script>
+  // Progress bar on scroll
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+  });
+
+  // Intersection observer for animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.question-card, .section').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Auto-resize textareas
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    });
+  });
+</script>
+
+</body>
+</html>
