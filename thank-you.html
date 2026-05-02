@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank You — 360° Feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --accent: #c1002a; --accent-light: #fdf0f2; --bg: #fafaf8; --text: #1a1a1a; --text-muted: #6b6b6b; --border: #e8e6e1; --shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.03); --font-display: 'Cormorant Garamond', Georgia, serif; --font-body: 'DM Sans', -apple-system, sans-serif; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; text-align: center; padding: 2rem; }
+  body::before { content: ''; position: fixed; top: -30%; right: -20%; width: 70vw; height: 70vw; border-radius: 50%; background: radial-gradient(circle, var(--accent-light) 0%, transparent 70%); pointer-events: none; }
+  .lang-toggle { position: fixed; top: 1.2rem; right: 1.5rem; z-index: 100; display: flex; background: #fff; border: 1px solid var(--border); border-radius: 100px; overflow: hidden; box-shadow: var(--shadow); }
+  .lang-toggle button { font-family: var(--font-body); font-size: .78rem; font-weight: 500; letter-spacing: .05em; padding: .5rem 1rem; border: none; cursor: pointer; background: transparent; color: var(--text-muted); transition: all .25s ease; }
+  .lang-toggle button.active { background: var(--accent); color: #fff; }
+  .lang-toggle button:hover:not(.active) { background: var(--accent-light); color: var(--accent); }
+  .wrapper { position: relative; z-index: 1; max-width: 500px; animation: rise 1s ease-out; }
+  .check { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #c1002a, #e0334e); display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; box-shadow: 0 4px 20px rgba(193,0,42,.25); animation: pulse 2s ease-in-out infinite; }
+  .check svg { width: 36px; height: 36px; }
+  h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; margin-bottom: .75rem; }
+  p { font-size: .95rem; color: var(--text-muted); font-weight: 300; line-height: 1.7; margin-bottom: 1.5rem; }
+  .footer { font-size: .75rem; color: var(--text-muted); opacity: .5; margin-top: 2rem; }
+  @keyframes rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+</style>
+</head>
+<body>
+<div class="lang-toggle" id="langToggle">
+  <button class="active" data-lang="en" onclick="setLang('en')">EN</button>
+  <button data-lang="de" onclick="setLang('de')">DE</button>
+</div>
+<div class="wrapper">
+  <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  <h1><span class="lang-en">Thank You</span><span class="lang-de" style="display:none">Vielen Dank</span></h1>
+  <p><span class="lang-en">Your 360° feedback has been submitted successfully. Your honest observations are incredibly valuable for my personal and professional development.</span><span class="lang-de" style="display:none">Ihr 360°-Feedback wurde erfolgreich übermittelt. Ihre ehrlichen Beobachtungen sind äußerst wertvoll für meine persönliche und berufliche Entwicklung.</span></p>
+  <p class="footer"><span class="lang-en">360° Feedback Survey · TH Nürnberg Georg Simon Ohm</span><span class="lang-de" style="display:none">360°-Feedback-Befragung · TH Nürnberg Georg Simon Ohm</span></p>
+</div>
+<script>
+function setLang(lang) {
+  const show = 'lang-' + lang, hide = lang === 'en' ? 'lang-de' : 'lang-en';
+  document.querySelectorAll('.' + show).forEach(el => el.style.display = '');
+  document.querySelectorAll('.' + hide).forEach(el => el.style.display = 'none');
+  document.querySelectorAll('#langToggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+}
+</script>
+</body>
+</html>
