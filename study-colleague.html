@@ -243,12 +243,7 @@
     <p><span class="lang-en">Please answer the following questions based on the situations in which you have experienced me personally. There are no right or wrong answers. The most helpful feedback is honest, specific, and based on real observations.</span><span class="lang-de" style="display:none">Bitte beantworten Sie die folgenden Fragen basierend auf den Situationen, in denen Sie mich persönlich erlebt haben. Es gibt keine richtigen oder falschen Antworten. Das hilfreichste Feedback ist ehrlich, konkret und basiert auf echten Beobachtungen.</span></p>
   </div>
 
-  <form action="https://formsubmit.co/mohammadsankar@gmail.com" method="POST">
-    <input type="hidden" name="_subject" value="360° Feedback — Study Colleague">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_captcha" value="true">
-    <input type="text" name="_honey" style="display:none">
-    <input type="hidden" name="Survey Version" value="Study Colleague">
+  <form id="feedbackForm" onsubmit="return submitForm(event)">
 
     <div class="section">
       <div class="section-header">
@@ -423,7 +418,7 @@
     </div>
 
     <div class="submit-area">
-      <button type="submit" class="submit-btn">
+      <button type="submit" class="submit-btn" id="submitBtn">
         <span class="lang-en">Submit Feedback</span><span class="lang-de" style="display:none">Feedback absenden</span>
       </button>
       <p class="submit-note"><span class="lang-en">Your response will be sent securely and anonymously.</span><span class="lang-de" style="display:none">Ihre Antwort wird sicher und anonym gesendet.</span></p>
@@ -463,9 +458,86 @@
   }, { threshold: 0.1 });
   document.querySelectorAll('.question-card, .section').forEach(el => observer.observe(el));
 
+  
+  // === GOOGLE APPS SCRIPT SUBMISSION ===
+  // IMPORTANT: Replace this URL with your Google Apps Script Web App URL
+  const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+  function submitForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const origEn = btn.querySelector('.lang-en').textContent;
+    const origDe = btn.querySelector('.lang-de').textContent;
+    btn.querySelector('.lang-en').textContent = 'Submitting…';
+    btn.querySelector('.lang-de').textContent = 'Wird gesendet…';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    const form = document.getElementById('feedbackForm');
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((val, key) => { data[key] = val; });
+    data.version = 'Study Colleague';
+    data.prefix = 'study';
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      window.location.href = 'thank-you.html';
+    })
+    .catch(err => {
+      console.error(err);
+      btn.querySelector('.lang-en').textContent = origEn;
+      btn.querySelector('.lang-de').textContent = origDe;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      alert('Error submitting. Please try again.');
+    });
+
+    return false;
+  }
+
   document.querySelectorAll('textarea').forEach(ta => {
     ta.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; });
   });
+
+  // Google Apps Script form submission
+  function submitForm(e) {
+    e.preventDefault();
+    var form = document.getElementById('feedbackForm');
+    var btn = form.querySelector('.submit-btn');
+    var origText = btn.innerHTML;
+    btn.innerHTML = '<span class="lang-en">Sending...</span><span class="lang-de" style="display:none">Wird gesendet...</span>';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    
+    var formData = new URLSearchParams(new FormData(form));
+    
+    fetch('https://script.google.com/macros/s/AKfycbwNpdyiqgsxuh1cbbq-6loPw92wIvToCnl6F73kMlXteFwudXDCKKSNf1IRQcwm9fup/exec', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      mode: 'no-cors'
+    }).then(function() {
+      window.location.href = 'https://mohammadsankar-cpu.github.io/360-feedback-survey/thank-you.html';
+    }).catch(function(err) {
+      btn.innerHTML = origText;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      alert('Submission failed. Please try again.');
+    });
+    
+    // Redirect after 3s even if no-cors hides the response
+    setTimeout(function() {
+      window.location.href = 'https://mohammadsankar-cpu.github.io/360-feedback-survey/thank-you.html';
+    }, 3000);
+    
+    return false;
+  }
 </script>
 
 </body>
